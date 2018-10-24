@@ -18,7 +18,7 @@ class CalculationMI():
         dictuniqueX = {}
         XList = []
         
-        for i in self.X:
+        for i in X:
             dictuniqueX[str(i)] = i
         
         for key in dictuniqueX:
@@ -66,14 +66,16 @@ class CalculationMI():
         probabilityXY = np.zeros([n,m])
         
         for i in range(0,n):
-            indexX = self.__findAllIndex(XList,i)
+            indexX = self.__findAllIndex(self.X,XList[i])
             for j in range(0,m):
-                indexY = self.__findAllIndex(YList,j)
+                indexY = self.__findAllIndex(self.Y,YList[j])
                 probabilityXY[i,j] = len(self.__intersect(indexX,indexY))/total
                 
         return self.__getMI(probabilityXY)
     
     def runapp(self):
+        #print(self.X)
+        #print(self.Y)
         return self.__Calculation()
 def readdata(filepath,splitchar = ''):
     data = []
@@ -84,6 +86,7 @@ def readdata(filepath,splitchar = ''):
 
 if __name__ == '__main__': 
     X = [1,2,3,4]
-    Y = [1,2,3,5]
+    Y = [2,2,3,2]
     MI = CalculationMI(X,Y).runapp()
+    print(MI)
    

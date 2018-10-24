@@ -6,15 +6,16 @@ Created on Thu Sep 13 17:52:57 2018
 """
 import csv 
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import math
 
 class Func_matualInfo():
-    def __init__(self,datapath=None,labelpath=None,data=None,lable=None):
+    def __init__(self,datapath=None,labelpath=None,data=None,label=None):
         self.datapath = datapath
         self.labelpath = labelpath 
         self.data = data
-        self.label = lable
+        self.label = label
         
     def __readdata(self,filepath):
         mydata = []
@@ -41,7 +42,7 @@ class Func_matualInfo():
         row,column = np.shape(self.data)
         
         count = np.max(self.label) - np.min(self.label) + 1
-        n, bins, patches = plt.hist(self.label.astype('int32'),int(count))
+        n, bins, patches = plt.hist(self.label,count)
         P_label = n/column
         Entropy_Label = np.sum(-P_label * np.log2(P_label + math.pow(10,-16)))
         
@@ -101,6 +102,14 @@ class Func_matualInfo():
         self.__dealwithData()
         return self.__process()
         
+def getdata(datapath = 'datafeatures.csv',labelpath = 'label.csv'):
+    dataset = pd.read_csv(datapath)
+    feature = dataset.iloc[:,:].values
+    labelset = pd.read_csv(labelpath)
+    label = labelset.iloc[:].values
+    return feature,label
+    
 if __name__ == '__main__': 
-    runapp = Func_matualInfo(datapath = 'datafeatures.csv',labelpath = 'label.csv')
+    feature,label = getdata()
+    runapp = Func_matualInfo(data = feature,label = label)
     print(runapp.run())
