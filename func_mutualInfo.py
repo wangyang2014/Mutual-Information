@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Sep 13 17:52:57 2018
-
 @author: wangyang
 """
 import csv 
@@ -39,12 +38,15 @@ class Func_matualInfo():
     def __process(self):
         maxLabel = np.max(self.label)
         maxData = np.max(self.data) + 1
+        self.data = np.mat(self.data)
         row,column = np.shape(self.data)
         
         count = np.max(self.label) - np.min(self.label) + 1
         n, bins, patches = plt.hist(self.label,count)
         P_label = n/column
         Entropy_Label = np.sum(-P_label * np.log2(P_label + math.pow(10,-16)))
+        
+        self.label =  np.mat(np.transpose(self.label))
         
         if (row < 9):
             zz = []
@@ -53,15 +55,20 @@ class Func_matualInfo():
             zz = np.asarray(zz)
             
             hist_Label = np.zeros([maxData*row,maxLabel],dtype = 'float')
-            tempIndex = np.dot(zz,self.data)
+            tempIndex = np.dot(zz,self.data) + 1
+            #tempIndex.dtype = 'int32'
+            #self.label.dtype = 'int32'
             
             for i in range(0,column):
-                hist_Label[tempIndex[i],self.label[i]] += 1 
+                print(i)
+                indexi = int(tempIndex[0,i]) - 1
+                indexj = int(self.label[0,i]) - 1
+                hist_Label[indexi,indexj] += 1 
                 
             sunHist = np.sum(hist_Label,1)
             repHist = np.transpose(np.asarray([sunHist,sunHist]))
             pHist_Label = hist_Label/(repHist+math.pow(10,-16))
-            InfoIncre = - np.sum(np.log2(pHist_Label+math.pow(10,-16))*pHist_Label) * repHist
+            InfoIncre = - np.sum((np.log2(pHist_Label+math.pow(10,-16))*pHist_Label) * repHist,0)
             
             MI = Entropy_Label - sum(InfoIncre)/column
             return MI
@@ -111,5 +118,5 @@ def getdata(datapath = 'datafeatures.csv',labelpath = 'label.csv'):
     
 if __name__ == '__main__': 
     feature,label = getdata()
-    runapp = Func_matualInfo(data = feature,label = label)
+    runapp = Func_matualInfo(data = feature[:,0],label = label)
     print(runapp.run())
